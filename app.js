@@ -42,11 +42,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const datum = new Date(godina, mjesec + 1, 0);
     const brojDana = datum.getDate();
     const dani = ["Ned", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"];
+
     const mjesecGodinaKey = `${godina}-${pad(mjesec + 1)}`;
     const spremljeniPodaci = JSON.parse(localStorage.getItem(mjesecGodinaKey) || "{}");
 
     let html = "<table><thead><tr><th>Datum</th><th>Od</th><th>Do</th><th>Vrsta</th><th>Ukupno</th></tr></thead><tbody>";
-
     for (let d = 1; d <= brojDana; d++) {
       const datumObj = new Date(godina, mjesec, d);
       const danTjedna = datumObj.getDay();
@@ -56,25 +56,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const jeBlagdan = blagdani[godina].includes(`${pad(d)}-${pad(mjesec + 1)}`);
       const klasa = danTjedna === 0 || danTjedna === 6 || jeBlagdan ? "neradni" : "";
 
-      const podaci = spremljeniPodaci[id] || {};
+      const podatak = spremljeniPodaci[id] || { od: "", do: "", vrsta: jeBlagdan ? "BLAGDAN" : "" };
 
       html += `<tr class="${klasa}">
         <td>${danLabel}, ${datumStr}</td>
-        <td><input type="time" class="od" data-id="${id}" value="${podaci.od || ""}" ${jeBlagdan ? "disabled" : ""}></td>
-        <td><input type="time" class="do" data-id="${id}" value="${podaci.do || ""}" ${jeBlagdan ? "disabled" : ""}></td>
+        <td><input type="time" class="od" data-id="${id}" value="${podatak.od}" ${jeBlagdan ? "disabled" : ""}></td>
+        <td><input type="time" class="do" data-id="${id}" value="${podatak.do}" ${jeBlagdan ? "disabled" : ""}></td>
         <td>
           <select class="vrsta" data-id="${id}">
             <option value="">-</option>
-            <option value="GODIŠNJI ODMOR" ${podaci.vrsta === "GODIŠNJI ODMOR" ? "selected" : ""}>GODIŠNJI ODMOR</option>
-            <option value="BOLOVANJE" ${podaci.vrsta === "BOLOVANJE" ? "selected" : ""}>BOLOVANJE</option>
-            <option value="PRIVATNO" ${podaci.vrsta === "PRIVATNO" ? "selected" : ""}>PRIVATNO</option>
-            <option value="BLAGDAN" ${jeBlagdan || podaci.vrsta === "BLAGDAN" ? "selected" : ""}>BLAGDAN</option>
+            <option value="GODIŠNJI ODMOR"${podatak.vrsta === "GODIŠNJI ODMOR" ? " selected" : ""}>GODIŠNJI ODMOR</option>
+            <option value="BOLOVANJE"${podatak.vrsta === "BOLOVANJE" ? " selected" : ""}>BOLOVANJE</option>
+            <option value="PRIVATNO"${podatak.vrsta === "PRIVATNO" ? " selected" : ""}>PRIVATNO</option>
+            <option value="BLAGDAN"${podatak.vrsta === "BLAGDAN" ? " selected" : ""}>BLAGDAN</option>
           </select>
         </td>
         <td class="ukupno" data-id="${id}">0h 00min</td>
       </tr>`;
     }
-
     html += "</tbody></table>";
     tablicaDiv.innerHTML = html;
 
@@ -85,25 +84,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function izracunajSve() {
       let ukupnoMin = 0, prekovremeniMin = 0;
       let godMin = 0, bolMin = 0;
-      let noviPodaci = {};
+
+      let podaci = {};
 
       document.querySelectorAll("tbody tr").forEach(tr => {
-        const odEl = tr.querySelector(".od");
-        const doEl = tr.querySelector(".do");
-        const vrstaEl = tr.querySelector(".vrsta");
+        const id = tr.querySelector(".od").dataset.id;
+        const od = tr.querySelector(".od")?.value || "";
+        const doVrijeme = tr.querySelector(".do")?.value || "";
+        const vrsta = tr.querySelector(".vrsta")?.value || "";
         const ukupnoTd = tr.querySelector(".ukupno");
 
-        const od = odEl?.value;
-        const doVrijeme = doEl?.value;
-        const vrsta = vrstaEl?.value;
-        const id = odEl?.dataset.id;
-
         let min = 0;
-
-        if (vrsta === "GODIŠNJI ODMOR") min = 480;
-        else if (vrsta === "BOLOVANJE") min = 480;
-        else if (vrsta === "BLAGDAN") min = 480;
-        else if (od && doVrijeme) min = izracunajRazliku(od, doVrijeme);
+        if (vrsta === "GODIŠNJI ODMOR" || vrsta === "BOLOVANJE" || vrsta === "BLAGDAN") {
+          min = 480;
+        } else if (od && doVrijeme) {
+          min = izracunajRazliku(od, doVrijeme);
+        }
 
         ukupnoTd.textContent = formatirajMinute(min);
 
@@ -113,14 +109,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (min > 480 && vrsta === "") prekovremeniMin += min - 480;
 
-        if (id) {
-          noviPodaci[id] = {
-            od: od || "",
-            do: doVrijeme || "",
-            vrsta: vrsta || ""
-          };
-        }
+        podaci[id] = { od, do: doVrijeme, vrsta };
       });
+
+      localStorage.setItem(mjesecGodinaKey, JSON.stringify(podaci));
 
       const fond = [...tablicaDiv.querySelectorAll("tr")].filter(tr => !tr.classList.contains("neradni")).length * 480;
       const sveMin = ukupnoMin + godMin + bolMin;
@@ -133,10 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>Prekovremeni sati:</strong> ${formatirajMinute(prekovremeniMin)}</p>
         <p><strong>Fond sati:</strong> ${formatirajMinute(fond)}</p>
       `;
-
-      localStorage.setItem(mjesecGodinaKey, JSON.stringify(noviPodaci));
     }
 
-    izracunajSve();
+    izracunajSve(); // prvi izračun odmah
   });
 });
