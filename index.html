@@ -27,5 +27,13 @@
     <div id="rezultati"></div>
   </div>
   <script src="app.js"></script>
+  <script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("Service Worker registriran"))
+      .catch(err => console.error("Greška prilikom registracije:", err));
+  }
+</script>
+
 </body>
 </html>
