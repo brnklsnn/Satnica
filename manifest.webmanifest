@@ -1,12 +1,21 @@
 {
   "name": "Fond sati",
   "short_name": "Satnica",
-  "start_url": ".",
+  "start_url": "/Satnica/",
   "display": "standalone",
   "background_color": "#ffffff",
+  "theme_color": "#1e1e1e",
   "description": "Evidencija mjesečnog fonda sati",
   "icons": [
-    { "src": "ikone/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "ikone/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "ikone/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "ikone/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
