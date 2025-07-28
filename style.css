@@ -1,0 +1,16 @@
+body {
+  font-family: sans-serif;
+  padding: 1em;
+  background: #f4f4f4;
+}
+h1 {
+  text-align: center;
+  color: #0a74da;
+}
+select, button {
+  margin: 0.5em;
+  padding: 0.4em;
+}
+#tablica, #rezultati {
+  margin-top: 1em;
+}
