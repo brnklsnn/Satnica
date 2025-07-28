@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Mjesečni fond sati</title>
+</head>
+<body>
+  <div class="app">
+    <h1>Mjesečni fond sati</h1>
+    <label for="godina">Godina:</label>
+    <select id="godina"></select>
+    <label for="mjesec">Mjesec:</label>
+    <select id="mjesec">
+      <option value="0">Siječanj</option><option value="1">Veljača</option>
+      <option value="2">Ožujak</option><option value="3">Travanj</option>
+      <option value="4">Svibanj</option><option value="5">Lipanj</option>
+      <option value="6" selected>Srpanj</option><option value="7">Kolovoz</option>
+      <option value="8">Rujan</option><option value="9">Listopad</option>
+      <option value="10">Studeni</option><option value="11">Prosinac</option>
+    </select>
+    <button id="ucitaj">Učitaj mjesec</button>
+    <div id="tablica"></div>
+    <div id="rezultati"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
